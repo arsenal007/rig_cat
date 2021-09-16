@@ -1,0 +1,260 @@
+<!--
+	Rig definition file for use with fldigi
+-->
+
+<RIGDEF>
+
+<RIG>Kenwood TS-480HX</RIG>
+
+<PROGRAMMER>
+	Dave Freese		W1HKJ
+	Tester:			CT1DRB, David Quental
+</PROGRAMMER>
+
+<STATUS>
+	Verified
+	Version:	3.23.08
+	Date:		27 Feb 2016
+</STATUS>
+
+<TITLE>RigCAT - TS-480HX</TITLE>
+
+<!-- set to polling interval in milliseconds, default = 100 -->
+<!-- <POLLINT>100</POLLINT> -->
+<POLLINT>500</POLLINT>
+
+
+<!-- set to true to debug xml statements and suppress actual CAT i/o -->
+<NOSERIAL>false</NOSERIAL>
+
+<!-- set true for additional event logging of CAT events -->
+<DEBUG>false</DEBUG>
+
+<!-- set true for serial events to be logged as ASCII text string -->
+<ASCII>true</ASCII>
+
+<!--
+default settings for initial setup
+-->
+<TIMEOUT>50</TIMEOUT>
+<RETRIES>2</RETRIES>
+<WRITE_DELAY>5</WRITE_DELAY>
+<BAUDRATE>9600</BAUDRATE>
+<RTSCTS>true</RTSCTS>
+<ECHO>false</ECHO>
+<CMDPTT>true</CMDPTT>
+
+<MODES>
+	<ELEMENT><SYMBOL>LSB</SYMBOL><STRING>1</STRING></ELEMENT>
+	<ELEMENT><SYMBOL>USB</SYMBOL><STRING>2</STRING></ELEMENT>
+	<ELEMENT><SYMBOL>CW</SYMBOL><STRING>3</STRING></ELEMENT>
+	<ELEMENT><SYMBOL>FM</SYMBOL><STRING>4</STRING></ELEMENT>
+	<ELEMENT><SYMBOL>AM</SYMBOL><STRING>5</STRING></ELEMENT>
+	<ELEMENT><SYMBOL>FSK</SYMBOL><STRING>6</STRING></ELEMENT>
+	<ELEMENT><SYMBOL>CW-R</SYMBOL><STRING>7</STRING></ELEMENT>
+	<ELEMENT><SYMBOL>FSK</SYMBOL><STRING>9</STRING></ELEMENT>
+</MODES>
+
+<!-- lsb mode strings should match those given in the modes symbol specifier -->
+
+<LSBMODES>
+	<STRING>LSB</STRING>
+	<STRING>RTTY</STRING>
+</LSBMODES>
+
+<!-- frequency & mode data are contained in the IF; response
+     IFaaaaaaaaaaaXXXXXbbbbbcdXeefghjklmmX;
+     12345678901234567890123456789012345678
+     where:
+         aaaaaaaaaaa => decimal value of vfo frequency
+         bbbbb => rit/xit frequency
+         c => rit off/on
+         d => xit off/on
+         e => memory channel
+         f => tx/rx
+         g => mode
+         h => function
+         j => scan off/on
+         k => split off /on
+         l => tone off /on
+         m => tone number
+         X => unused characters
+         
+Test output from Minicom to IF; command         
+
+IF00014070000       -00300     000200;
+
+0002000 is vfoA in usb
+0001000 is vfoA in LSB
+0003000 CW
+0004000 FM
+0005000 AM
+0007000 CWN    (dont have narrow filter however)
+0002100 VFOB in USB
+0002001 VFOA in USB SPILT
+0012000 PTT on in USB
+         
+-->
+
+<REPLY>
+	<SYMBOL>MODE</SYMBOL>
+	<SIZE>38</SIZE>
+	<STRING>IF</STRING>
+	<FILL>27</FILL>
+	<DATA>
+		<DTYPE>STRING</DTYPE>
+		<SIZE>1</SIZE>
+	</DATA>
+	<FILL>7</FILL>
+	<STRING>;</STRING>
+</REPLY>
+
+<REPLY>
+	<SYMBOL>FREQ</SYMBOL>
+	<SIZE>38</SIZE>
+	<STRING>IF</STRING>
+	<DATA>
+		<DTYPE>DECIMAL</DTYPE>
+	    <SIZE>11</SIZE>
+	    <MAX>99999999999</MAX>
+	    <MIN>00001500000</MIN>
+	    <RESOL>1</RESOL>
+	</DATA>
+	<FILL>24</FILL>
+	<STRING>;</STRING>
+</REPLY>	
+
+<COMMAND>
+	<SYMBOL>SETFREQ</SYMBOL>
+	<SIZE>14</SIZE>
+	<STRING>FA</STRING>
+	<DATA>
+		<DTYPE>DECIMAL</DTYPE>
+	    <SIZE>11</SIZE>
+	    <MAX>99999999999</MAX>
+	    <MIN>00001500000</MIN>
+	    <RESOL>1</RESOL>
+	</DATA>
+	<STRING>;</STRING>
+</COMMAND>
+
+<!-- frequency data uses IF; information command same as hamlib usage
+-->
+<COMMAND>
+	<SYMBOL>GETFREQ</SYMBOL>
+	<SIZE>3</SIZE>
+	<STRING>IF;</STRING>
+	<INFO>FREQ</INFO>
+</COMMAND>
+
+<COMMAND>
+	<SYMBOL>SETMODE</SYMBOL>
+	<SIZE>4</SIZE>
+	<STRING>MD</STRING>
+	<DATA>
+		<DTYPE>STRING</DTYPE>
+		<SIZE>1</SIZE>
+	</DATA>
+	<STRING>;</STRING>
+</COMMAND>
+
+<!-- mode data uses IF; information command same as hamlib usage
+-->
+<COMMAND>
+	<SYMBOL>GETMODE</SYMBOL>
+	<SIZE>3</SIZE>
+	<STRING>IF;</STRING>
+	<INFO>MODE</INFO>
+</COMMAND>
+
+<COMMAND>
+	<SYMBOL>PTTON</SYMBOL>
+	<SIZE>4</SIZE>
+	<STRING>TX1;</STRING>
+</COMMAND>
+
+<COMMAND>
+	<SYMBOL>PTTOFF</SYMBOL>
+	<SIZE>3</SIZE>
+	<STRING>RX;</STRING>
+</COMMAND>
+
+<!-- smeter scale mapping -->
+<SMETER> 0,0; 20,100 </SMETER>
+
+<!-- power meter scale mapping -->
+<!-- <PMETER> 0,0; 20,200 </PMETER> -->
+
+<PMETER> 0,0; 2,5; 4,10; 7,25; 11,50; 16,100; 20,200 </PMETER>
+
+<REPLY>
+  <SYMBOL>SMETER</SYMBOL>
+  <SIZE>8</SIZE>
+  <STRING>SM0</STRING>
+  <DATA>
+    <DTYPE>DECIMAL</DTYPE>
+    <SIZE>4</SIZE>
+  </DATA>
+  <STRING>;</STRING>
+</REPLY>
+
+<COMMAND>
+  <SYMBOL>GET_SMETER</SYMBOL>
+  <SIZE>4</SIZE>
+  <STRING>SM0;</STRING>
+  <INFO>SMETER</INFO>
+</COMMAND>
+
+<REPLY>
+  <SYMBOL>PWRMETER</SYMBOL>
+  <SIZE>8</SIZE>
+  <STRING>SM0</STRING>
+  <DATA>
+    <DTYPE>DECIMAL</DTYPE>
+    <SIZE>4</SIZE>
+  </DATA>
+  <STRING>;</STRING>
+</REPLY>
+
+<COMMAND>
+  <SYMBOL>GET_PWRMETER</SYMBOL>
+  <SIZE>4</SIZE>
+  <STRING>SM0;</STRING>
+  <INFO>PWRMETER</INFO>
+</COMMAND>
+
+// power level set
+<PWRLEVEL>
+  5, 5; 200, 200
+</PWRLEVEL>
+
+<REPLY>
+  <SYMBOL>PWRLEVEL</SYMBOL>
+  <SIZE>6</SIZE>
+  <STRING>PC</STRING>
+  <DATA>
+    <DTYPE>DECIMAL</DTYPE>
+    <SIZE>3</SIZE>
+  </DATA>
+  <STRING>;</STRING>
+</REPLY>
+
+<COMMAND>
+  <SYMBOL>GET_PWRLEVEL</SYMBOL>
+  <SIZE>3</SIZE>
+  <STRING>PC;</STRING>
+  <INFO>PWRLEVEL</INFO>
+</COMMAND>
+
+<COMMAND>
+  <SYMBOL>SET_PWRLEVEL</SYMBOL>
+	<SIZE>6</SIZE>
+	<STRING>PC</STRING>
+	<DATA>
+		<DTYPE>DECIMAL</DTYPE>
+		<SIZE>3</SIZE>
+	</DATA>
+	<STRING>;</STRING>
+</COMMAND>
+
+</RIGDEF>
